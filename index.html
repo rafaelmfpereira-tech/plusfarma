@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>+Farma | Pesquisa de Medicamentos</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f5f7fa; margin:0 }
+    header { background:#0b3c5d; color:#fff; padding:20px }
+    header h1 { margin:0 }
+    main { padding:30px }
+    .search-box { max-width:600px; margin-bottom:20px }
+    input { width:100%; padding:12px; font-size:16px }
+    .result { background:#fff; padding:15px; margin-bottom:10px; border-radius:6px }
+    .result h3 { margin:0 0 5px 0 }
+    footer { text-align:center; padding:15px; font-size:13px; color:#666 }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>+Farma</h1>
+  <p>Plataforma de Pesquisa de Medicamentos</p>
+</header>
+
+<main>
+  <div class="search-box">
+    <input type="text" id="search" placeholder="Pesquisar medicamento por nome..." onkeyup="searchDrug()" />
+  </div>
+
+  <div id="results"></div>
+</main>
+
+<footer>
+  Protótipo funcional | Projeto académico +Farma
+</footer>
+
+<script>
+// --- Mock API (+Farma) ---
+const apiData = [
+  { nome: "Paracetamol", forma: "Comprimido", dosagem: "500mg", laboratorio: "Farmalab" },
+  { nome: "Amoxicilina", forma: "Cápsula", dosagem: "500mg", laboratorio: "MedAngola" },
+  { nome: "Ibuprofeno", forma: "Comprimido", dosagem: "400mg", laboratorio: "SaúdePlus" }
+];
+
+function searchDrug() {
+  const query = document.getElementById('search').value.toLowerCase();
+  const results = document.getElementById('results');
+  results.innerHTML = "";
+
+  apiData.filter(d => d.nome.toLowerCase().includes(query))
+    .forEach(d => {
+      results.innerHTML += `
+        <div class="result">
+          <h3>${d.nome}</h3>
+          <p><strong>Forma:</strong> ${d.forma}</p>
+          <p><strong>Dosagem:</strong> ${d.dosagem}</p>
+          <p><strong>Laboratório:</strong> ${d.laboratorio}</p>
+        </div>`;
+    });
+}
+</script>
+
+</body>
+</html>

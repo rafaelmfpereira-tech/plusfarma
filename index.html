@@ -2,100 +2,132 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
-  <title>+Farma | Pesquisa e Simulação de Compra</title>
+  <title>+Farma | Plataforma Digital de Farmácias</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial, sans-serif; background:#f5f7fa; margin:0 }
-    header { background:#0b3c5d; color:#fff; padding:20px }
-    header h1 { margin:0 }
-    main { padding:30px; display:grid; grid-template-columns: 2fr 1fr; gap:20px }
-    .search-box input { width:100%; padding:12px; font-size:16px }
-    .result, .cart { background:#fff; padding:15px; margin-bottom:10px; border-radius:6px }
-    button { background:#0b3c5d; color:#fff; border:none; padding:8px 12px; cursor:pointer; border-radius:4px }
-    button:hover { opacity:0.9 }
-    footer { text-align:center; padding:15px; font-size:13px; color:#666 }
+    :root{--primary:#0b3c5d;--secondary:#1e88e5;--bg:#f4f6f9;--card:#fff}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg)}
+    header{position:sticky;top:0;z-index:10;background:var(--primary);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:14px 22px}
+    header h1{margin:0;font-size:22px}
+    nav span{margin-left:18px;cursor:pointer}
+    .badge{background:red;color:#fff;border-radius:50%;padding:2px 6px;font-size:11px}
+    main{max-width:1200px;margin:auto;padding:24px}
+    input,select{width:100%;padding:12px;border-radius:6px;border:1px solid #ccc}
+    .filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+    .grid{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+    .card{background:var(--card);border-radius:10px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,.08);animation:fadeUp .4s ease}
+    .price{color:var(--secondary);font-weight:bold}
+    button{background:var(--secondary);color:#fff;border:none;padding:10px 14px;border-radius:6px;cursor:pointer}
+    button.alt{background:#555}
+    button:hover{opacity:.9}
+    .panel{position:fixed;top:0;right:-420px;width:380px;height:100%;background:#fff;box-shadow:-4px 0 18px rgba(0,0,0,.2);padding:20px;transition:.4s;z-index:20;overflow:auto}
+    .panel.open{right:0}
+    footer{padding:20px;font-size:12px;color:#555;text-align:center}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
   </style>
 </head>
 <body>
 
 <header>
   <h1>+Farma</h1>
-  <p>Pesquisa de Medicamentos e Simulação de Compra</p>
+  <nav>
+    <span onclick="openLogin()">👤 Conta</span>
+    <span onclick="toggleCart()">🛒 Carrinho <span class="badge" id="cartCount">0</span></span>
+  </nav>
 </header>
 
 <main>
-  <div>
-    <div class="search-box">
-      <input type="text" id="search" placeholder="Pesquisar medicamento..." onkeyup="searchDrug()" />
-    </div>
-    <div id="results"></div>
+  <div class="filters">
+    <input id="q" placeholder="Pesquisar medicamento..." onkeyup="render()">
+    <select id="farm" onchange="render()">
+      <option value="">Todas as farmácias</option>
+      <option>Farmácia Central</option>
+      <option>Farmácia Popular</option>
+      <option>Farmácia Luanda Sul</option>
+    </select>
+    <select id="mode">
+      <option>Entrega ao domicílio</option>
+      <option>Levantamento em farmácia</option>
+    </select>
   </div>
 
-  <div class="cart">
-    <h3>Carrinho de Compras</h3>
-    <div id="cartItems"></div>
-    <p><strong>Total:</strong> <span id="total">0</span> USD</p>
-    <button onclick="checkout()">Simular Compra</button>
-  </div>
+  <div class="grid" id="grid"></div>
 </main>
 
+<!-- CART -->
+<div class="panel" id="cart">
+  <h3>Carrinho</h3>
+  <div id="cartItems"></div>
+  <p><strong>Total:</strong> <span id="total">0</span> Kz</p>
+  <p><strong>Pagamento:</strong></p>
+  <select id="pay">
+    <option>TPA</option>
+    <option>Transferência Bancária</option>
+    <option>Referência</option>
+  </select>
+  <br><br>
+  <button onclick="checkout()">Confirmar Simulação</button>
+</div>
+
+<!-- LOGIN -->
+<div class="panel" id="login">
+  <h3>Login</h3>
+  <select id="profile">
+    <option>Cliente</option>
+    <option>Farmácia</option>
+  </select><br><br>
+  <input placeholder="Email"><br><br>
+  <input placeholder="Senha" type="password"><br><br>
+  <button onclick="closeLogin()">Entrar (simulado)</button>
+</div>
+
 <footer>
-  Protótipo académico | +Farma | Ambiente de teste
+  <p><strong>Aviso Legal:</strong> Plataforma em ambiente de teste, sem transações reais. Informação de medicamentos com carácter meramente informativo.</p>
+  <p>Conforme boas práticas de compliance farmacêutico e proteção do consumidor.</p>
 </footer>
 
 <script>
-// --- Mock API +Farma ---
-const apiData = [
-  { nome: "Paracetamol", dosagem: "500mg", preco: 3.5, farmacia: "Farmácia Central" },
-  { nome: "Amoxicilina", dosagem: "500mg", preco: 12, farmacia: "Farmácia Saúde+" },
-  { nome: "Ibuprofeno", dosagem: "400mg", preco: 5, farmacia: "Farmácia Popular" }
+const meds=[
+ {nome:'Paracetamol',dos:'500mg',farm:'Farmácia Central',preco:2500,desc:'Analgésico e antipirético'},
+ {nome:'Ibuprofeno',dos:'400mg',farm:'Farmácia Popular',preco:3800,desc:'Anti-inflamatório'},
+ {nome:'Amoxicilina',dos:'500mg',farm:'Farmácia Luanda Sul',preco:12500,desc:'Antibiótico'},
+ {nome:'Omeprazol',dos:'20mg',farm:'Farmácia Central',preco:5400,desc:'Proteção gástrica'},
+ {nome:'Vitamina C',dos:'1000mg',farm:'Farmácia Popular',preco:4200,desc:'Suplemento vitamínico'}
 ];
+let cart=[];
 
-let cart = [];
-
-function searchDrug() {
-  const query = document.getElementById('search').value.toLowerCase();
-  const results = document.getElementById('results');
-  results.innerHTML = "";
-
-  apiData.filter(d => d.nome.toLowerCase().includes(query))
-    .forEach(d => {
-      results.innerHTML += `
-        <div class="result">
-          <h3>${d.nome}</h3>
-          <p>Dosagem: ${d.dosagem}</p>
-          <p>Farmácia: ${d.farmacia}</p>
-          <p><strong>Preço:</strong> ${d.preco} USD</p>
-          <button onclick='addToCart(${JSON.stringify(d)})'>Adicionar ao carrinho</button>
-        </div>`;
-    });
+function render(){
+ const q=document.getElementById('q').value.toLowerCase();
+ const f=document.getElementById('farm').value;
+ const g=document.getElementById('grid');
+ g.innerHTML='';
+ meds.filter(m=>(!q||m.nome.toLowerCase().includes(q))&&(!f||m.farm===f))
+ .forEach(m=>{
+   g.innerHTML+=`<div class='card'>
+     <h3>${m.nome}</h3>
+     <p>${m.dos}</p>
+     <p>${m.farm}</p>
+     <p class='price'>${m.preco.toLocaleString('pt-AO')} Kz</p>
+     <button onclick='detail(${JSON.stringify(m)})'>Detalhes</button>
+     <button class='alt' onclick='add(${JSON.stringify(m)})'>Adicionar</button>
+   </div>`;
+ });
 }
 
-function addToCart(item) {
-  cart.push(item);
-  renderCart();
+function detail(m){alert(m.nome+' – '+m.desc+' (informativo)')}
+function add(m){cart.push(m);document.getElementById('cartCount').innerText=cart.length}
+function toggleCart(){document.getElementById('cart').classList.toggle('open');updateCart()}
+function updateCart(){
+ let t=0;const d=document.getElementById('cartItems');d.innerHTML='';
+ cart.forEach(c=>{t+=c.preco;d.innerHTML+=`<p>${c.nome} - ${c.preco.toLocaleString('pt-AO')} Kz</p>`});
+ document.getElementById('total').innerText=t.toLocaleString('pt-AO')
 }
-
-function renderCart() {
-  const cartItems = document.getElementById('cartItems');
-  const totalSpan = document.getElementById('total');
-  cartItems.innerHTML = "";
-  let total = 0;
-
-  cart.forEach((item, index) => {
-    total += item.preco;
-    cartItems.innerHTML += `<p>${item.nome} - ${item.preco} USD</p>`;
-  });
-
-  totalSpan.innerText = total.toFixed(2);
-}
-
-function checkout() {
-  alert('Simulação concluída. Pedido registado em ambiente de teste.');
-  cart = [];
-  renderCart();
-}
+function checkout(){alert('Compra simulada com sucesso.');cart=[];document.getElementById('cartCount').innerText=0;updateCart()}
+function openLogin(){document.getElementById('login').classList.add('open')}
+function closeLogin(){document.getElementById('login').classList.remove('open')}
+render();
 </script>
-
 </body>
 </html>
 

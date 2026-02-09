@@ -2,16 +2,16 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
-  <title>+Farma | Pesquisa de Medicamentos</title>
+  <title>+Farma | Pesquisa e Simulação de Compra</title>
   <style>
     body { font-family: Arial, sans-serif; background:#f5f7fa; margin:0 }
     header { background:#0b3c5d; color:#fff; padding:20px }
     header h1 { margin:0 }
-    main { padding:30px }
-    .search-box { max-width:600px; margin-bottom:20px }
-    input { width:100%; padding:12px; font-size:16px }
-    .result { background:#fff; padding:15px; margin-bottom:10px; border-radius:6px }
-    .result h3 { margin:0 0 5px 0 }
+    main { padding:30px; display:grid; grid-template-columns: 2fr 1fr; gap:20px }
+    .search-box input { width:100%; padding:12px; font-size:16px }
+    .result, .cart { background:#fff; padding:15px; margin-bottom:10px; border-radius:6px }
+    button { background:#0b3c5d; color:#fff; border:none; padding:8px 12px; cursor:pointer; border-radius:4px }
+    button:hover { opacity:0.9 }
     footer { text-align:center; padding:15px; font-size:13px; color:#666 }
   </style>
 </head>
@@ -19,28 +19,38 @@
 
 <header>
   <h1>+Farma</h1>
-  <p>Plataforma de Pesquisa de Medicamentos</p>
+  <p>Pesquisa de Medicamentos e Simulação de Compra</p>
 </header>
 
 <main>
-  <div class="search-box">
-    <input type="text" id="search" placeholder="Pesquisar medicamento por nome..." onkeyup="searchDrug()" />
+  <div>
+    <div class="search-box">
+      <input type="text" id="search" placeholder="Pesquisar medicamento..." onkeyup="searchDrug()" />
+    </div>
+    <div id="results"></div>
   </div>
 
-  <div id="results"></div>
+  <div class="cart">
+    <h3>Carrinho de Compras</h3>
+    <div id="cartItems"></div>
+    <p><strong>Total:</strong> <span id="total">0</span> USD</p>
+    <button onclick="checkout()">Simular Compra</button>
+  </div>
 </main>
 
 <footer>
-  Protótipo funcional | Projeto académico +Farma
+  Protótipo académico | +Farma | Ambiente de teste
 </footer>
 
 <script>
-// --- Mock API (+Farma) ---
+// --- Mock API +Farma ---
 const apiData = [
-  { nome: "Paracetamol", forma: "Comprimido", dosagem: "500mg", laboratorio: "Farmalab" },
-  { nome: "Amoxicilina", forma: "Cápsula", dosagem: "500mg", laboratorio: "MedAngola" },
-  { nome: "Ibuprofeno", forma: "Comprimido", dosagem: "400mg", laboratorio: "SaúdePlus" }
+  { nome: "Paracetamol", dosagem: "500mg", preco: 3.5, farmacia: "Farmácia Central" },
+  { nome: "Amoxicilina", dosagem: "500mg", preco: 12, farmacia: "Farmácia Saúde+" },
+  { nome: "Ibuprofeno", dosagem: "400mg", preco: 5, farmacia: "Farmácia Popular" }
 ];
+
+let cart = [];
 
 function searchDrug() {
   const query = document.getElementById('search').value.toLowerCase();
@@ -52,13 +62,40 @@ function searchDrug() {
       results.innerHTML += `
         <div class="result">
           <h3>${d.nome}</h3>
-          <p><strong>Forma:</strong> ${d.forma}</p>
-          <p><strong>Dosagem:</strong> ${d.dosagem}</p>
-          <p><strong>Laboratório:</strong> ${d.laboratorio}</p>
+          <p>Dosagem: ${d.dosagem}</p>
+          <p>Farmácia: ${d.farmacia}</p>
+          <p><strong>Preço:</strong> ${d.preco} USD</p>
+          <button onclick='addToCart(${JSON.stringify(d)})'>Adicionar ao carrinho</button>
         </div>`;
     });
+}
+
+function addToCart(item) {
+  cart.push(item);
+  renderCart();
+}
+
+function renderCart() {
+  const cartItems = document.getElementById('cartItems');
+  const totalSpan = document.getElementById('total');
+  cartItems.innerHTML = "";
+  let total = 0;
+
+  cart.forEach((item, index) => {
+    total += item.preco;
+    cartItems.innerHTML += `<p>${item.nome} - ${item.preco} USD</p>`;
+  });
+
+  totalSpan.innerText = total.toFixed(2);
+}
+
+function checkout() {
+  alert('Simulação concluída. Pedido registado em ambiente de teste.');
+  cart = [];
+  renderCart();
 }
 </script>
 
 </body>
 </html>
+

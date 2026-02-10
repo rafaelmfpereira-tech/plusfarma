@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "nome": "Farmácia Central",
+    "localizacao": "Luanda - Maianga",
+    "distancia": "1.2 km"
+  },
+  {
+    "id": 2,
+    "nome": "Farmácia Vida",
+    "localizacao": "Luanda - Talatona",
+    "distancia": "3.8 km"
+  }
+]

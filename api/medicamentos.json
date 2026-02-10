@@ -21,3 +21,29 @@
     "descricao": "Cuidados do couro cabeludo."
   }
 ]
+[
+  {
+    "id": 1,
+    "nome": "Paracetamol 500mg",
+    "preco": 2500,
+    "farmacia": "Farmácia Central",
+    "categoria": "Analgésico",
+    "descricao": "Indicado para dores leves a moderadas e febre."
+  },
+  {
+    "id": 2,
+    "nome": "Amoxicilina 500mg",
+    "preco": 7200,
+    "farmacia": "Farmácia Vida",
+    "categoria": "Antibiótico",
+    "descricao": "Medicamento sujeito a prescrição médica."
+  },
+  {
+    "id": 3,
+    "nome": "Vitamina C 1000mg",
+    "preco": 4300,
+    "farmacia": "Farmácia Popular",
+    "categoria": "Suplemento",
+    "descricao": "Auxilia o sistema imunitário."
+  }
+]

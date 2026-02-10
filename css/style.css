@@ -13,10 +13,6 @@ header {
   align-items: center;
 }
 
-.top-actions button {
-  margin-left: 10px;
-}
-
 button {
   background: #1b8f4c;
   color: white;
@@ -53,24 +49,6 @@ button {
 .preco {
   color: #1b8f4c;
   font-weight: bold;
-}
-
-.box {
-  background: white;
-  margin: 20px;
-  padding: 15px;
-  border-radius: 8px;
-}
-
-.side {
-  position: fixed;
-  right: 0;
-  top: 0;
-  width: 300px;
-  height: 100%;
-  background: white;
-  padding: 20px;
-  box-shadow: -2px 0 10px rgba(0,0,0,0.2);
 }
 
 .hidden {

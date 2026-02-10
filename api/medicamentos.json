@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "nome": "Paracetamol 500mg",
+    "categoria": "Medicamento",
+    "preco": 2500,
+    "imagem": "https://via.placeholder.com/300x200?text=Paracetamol",
+    "descricao": "Analgésico e antipirético."
+  },
+  {
+    "nome": "Creme Hidratante",
+    "categoria": "Cosmético",
+    "preco": 6800,
+    "imagem": "https://via.placeholder.com/300x200?text=Creme",
+    "descricao": "Hidratação diária da pele."
+  },
+  {
+    "nome": "Shampoo Anticaspa",
+    "categoria": "Higiene",
+    "preco": 5200,
+    "imagem": "https://via.placeholder.com/300x200?text=Shampoo",
+    "descricao": "Cuidados do couro cabeludo."
+  }
+]
